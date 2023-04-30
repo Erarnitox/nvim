@@ -7,10 +7,14 @@ vim.keymap.set("n", "<leader>fe", vim.cmd.Ex)
 vim.opt.nu = true
 vim.opt.relativenumber = false
 
+vim.opt.mouse = "a"
+
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
+
+vim.opt.numberwidth = 5
 
 vim.opt.smartindent = true
 
@@ -34,8 +38,13 @@ vim.keymap.set("i", "hh", "#include <bits/stdc++.h>")
 
 -- CTags stuff:
 vim.keymap.set("n", "<leader>gd", "<C-]>")
+vim.keymap.set("n", "<leader>e", ":Lex 15<CR>")
 
--- packer stuff:
+vim.keymap.set("n", "gt", ":BufferLineCycleNext<CR>")
+vim.keymap.set("n", "gT", ":BufferLineCyclePrev<CR>")
+vim.keymap.set("n", "<leader>zq", ":bdelete %<CR>")
+vim.keymap.set("n", "<leader>zz", ":w <CR> :bdelete %<CR>")
+
 vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
@@ -45,7 +54,16 @@ return require('packer').startup(function(use)
     requires = { {'nvim-lua/plenary.nvim'} }
   }
 
-  use {'nyoom-engineering/oxocarbon.nvim'}
+  use {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+  }
+
+  use('lewis6991/gitsigns.nvim')
+
+  use 'martinsione/darkplus.nvim'
+  use 'Mofiqul/vscode.nvim'
+  use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
 
   use {
 	'nvim-treesitter/nvim-treesitter',
