@@ -1,4 +1,4 @@
-vim.opt.background = "dark" -- set this to dark or light
+vim.opt.background = "dark" 
 
 local c = require('vscode.colors').get_colors()
 require('vscode').setup({
@@ -18,12 +18,12 @@ require('vscode').load()
 
 require("bufferline").setup({
     options = {
-        buffer_close_icon = "",
+        buffer_close_icon = "x",
         close_command = "bdelete %d",
-        close_icon = "",
+        close_icon = "X",
         indicator = {
           style = "icon",
-          icon = " ",
+          icon = "F",
         },
         left_trunc_marker = "",
         modified_icon = "●",

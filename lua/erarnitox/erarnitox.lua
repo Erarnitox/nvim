@@ -6,10 +6,12 @@ vim.keymap.set("n", "<leader>fe", vim.cmd.Ex)
 -- some other settings
 vim.opt.nu = true
 vim.opt.relativenumber = false
+vim.opt.showcmd = true
+vim.opt.autoread = true
 
 vim.opt.mouse = "a"
 
-vim.opt.tabstop = 4
+vim.opt.tabstop = 2
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
@@ -86,7 +88,7 @@ return require('packer').startup(function(use)
   use('lewis6991/gitsigns.nvim')
 
   use 'martinsione/darkplus.nvim'
-  use 'Mofiqul/vscode.nvim'
+ -- use 'Mofiqul/vscode.nvim'
   use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
 
   use {
