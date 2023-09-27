@@ -154,7 +154,7 @@ require('lazy').setup({
     'martinsione/darkplus.nvim',
     priority = 1000,
     config = function()
-      vim.cmd.colorsheme 'darkplus'
+      vim.cmd.colorscheme 'darkplus'
     end,
   },
   {
