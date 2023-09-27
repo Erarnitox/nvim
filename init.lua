@@ -151,13 +151,20 @@ require('lazy').setup({
     'Civitasv/cmake-tools.nvim'
   },
   {
+    'martinsione/darkplus.nvim',
+    priority = 1000,
+    config = function()
+      vim.cmd.colorsheme 'darkplus'
+    end,
+  },
+  {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     -- See `:help lualine.txt`
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'darkplus',
         component_separators = '|',
         section_separators = '',
       },
