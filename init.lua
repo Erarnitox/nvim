@@ -92,7 +92,15 @@ require('lazy').setup({
       'folke/neodev.nvim',
     },
   },
-
+  {
+    'akinsho/toggleterm.nvim', version = "*", opts = {
+      open_mapping = '<leader>tt',
+      direction = 'horizontal',
+      start_in_insert = true,
+      close_on_exit = true,
+      shell = vim.o.shell
+    }
+  },
   {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -100,8 +108,6 @@ require('lazy').setup({
       -- Snippet Engine & its associated nvim-cmp source
       'L3MON4D3/LuaSnip',
       'saadparwaiz1/cmp_luasnip',
-
-
 
       -- Adds LSP completion capabilities
       'hrsh7th/cmp-nvim-lsp',
@@ -164,7 +170,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'darkplus',
+        theme = 'auto',
         component_separators = '|',
         section_separators = '',
       },
