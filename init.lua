@@ -54,13 +54,7 @@ require('lazy').setup({
     },
   },
   {
-    'akinsho/toggleterm.nvim', version = "*", opts = {
-      open_mapping = 'tt',
-      direction = 'horizontal',
-      start_in_insert = true,
-      close_on_exit = true,
-      shell = vim.o.shell
-    }
+    'akinsho/toggleterm.nvim', version = "*", config = true
   },
   {
     -- Autocompletion
@@ -207,7 +201,7 @@ require('lazy').setup({
 -- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 -- Make line numbers default
 vim.wo.number = true
@@ -224,7 +218,7 @@ vim.o.clipboard = 'unnamedplus'
 vim.o.breakindent = true
 
 -- Save undo history
-vim.o.undofile = true
+vim.o.undofile = false
 
 -- Case-insensitive searching UNLESS \C or capital in search
 vim.o.ignorecase = true
@@ -554,9 +548,13 @@ vim.opt.showmatch = true
 vim.keymap.set("i", "jj", "<ESC>")
 vim.keymap.set("i", "hh", "#include <bits/stdc++.h>")
 
+-- ToggleTerm
+vim.keymap.set("n", "tt", ":ToggleTerm<CR>")
+vim.keymap.set("t", "tt", "<Cmd>exe v:count1 . 'ToggleTerm'<CR>")
+
 -- CTags stuff:
 vim.keymap.set("n", "<leader>gd", "<C-]>")
-vim.keymap.set("n", "<leader>e", ":Lex 15<CR>")
+vim.keymap.set("n", "<leader>lex", ":Lex 15<CR>")
 
 vim.keymap.set("n", "gt", ":BufferLineCycleNext<CR>")
 vim.keymap.set("n", "gT", ":BufferLineCyclePrev<CR>")
