@@ -132,16 +132,7 @@ require('lazy').setup({
     },
   },
 
-  {
-    -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help indent_blankline.txt`
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
-  },
+  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
@@ -546,7 +537,7 @@ vim.opt.showmatch = true
 -- remaps
 
 vim.keymap.set("i", "jj", "<ESC>")
-vim.keymap.set("i", "hh", "#include <bits/stdc++.h>")
+
 
 -- ToggleTerm
 vim.keymap.set("n", "tt", ":ToggleTerm<CR>")
@@ -558,7 +549,10 @@ vim.keymap.set("n", "<leader>lex", ":Lex 15<CR>")
 
 vim.keymap.set("n", "gt", ":BufferLineCycleNext<CR>")
 vim.keymap.set("n", "gT", ":BufferLineCyclePrev<CR>")
+vim.keymap.set("n", "<leader>B", ":b#<CR>")
+vim.keymap.set("n", "<leader>b", "<C-o>")
 vim.keymap.set("n", "<leader>zq", ":bdelete %<CR>")
 vim.keymap.set("n", "<leader>zz", ":w <CR> :bdelete %<CR>")
+vim.keymap.set("n", "<leader>hh", "#include <bits/stdc++.h>")
 
 
