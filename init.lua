@@ -211,6 +211,7 @@ vim.opt.termguicolors = true
 -- empty setup using defaults
 require("nvim-tree").setup()
 
+require("ibl").setup()
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
