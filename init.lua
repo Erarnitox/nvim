@@ -23,8 +23,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-
-
 -- NOTE: Here is where you install your plugins.
 --  You can configure plugins using the `config` key.
 --
@@ -110,7 +108,10 @@ require('lazy').setup({
     },
   },
   {
-    "nvim-lua/plenary.nvim"
+    'sakhnik/nvim-gdb'
+  },
+  {
+    'nvim-lua/plenary.nvim'
   },
   {
     -- tools for cmake
@@ -164,7 +165,6 @@ require('lazy').setup({
   },
 
   {
-    
     "nvim-tree/nvim-tree.lua",
       version = "*",
       lazy = false,
@@ -183,25 +183,6 @@ require('lazy').setup({
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
     build = ':TSUpdate',
-  },
-  {
-    "kawre/leetcode.nvim",
-    build = ":TSUpdate html",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-telescope/telescope.nvim",
-      "nvim-lua/plenary.nvim", -- required by telescope
-      "MunifTanjim/nui.nvim",
-
-      -- optional
-      "nvim-tree/nvim-web-devicons",
-
-      -- recommended
-      -- "rcarriga/nvim-notify",
-    },
-    opts = {
-      -- configuration goes here
-    },
   },
 }, {})
 
@@ -311,7 +292,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]resume' })
 vim.keymap.set('n', '<leader>fd', function()
 	require('telescope.builtin').grep_string({ search = vim.fn.input("find: ") });
-end, { desc = 'Find Text in Files' })
+end, { desc = '[F]in[d] Text in Files' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -563,7 +544,6 @@ vim.opt.showmatch = true
 -- remaps
 
 vim.keymap.set("i", "jj", "<ESC>")
-
 
 -- ToggleTerm
 vim.keymap.set("n", "tt", ":ToggleTerm<CR>")
