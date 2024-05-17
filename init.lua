@@ -29,11 +29,12 @@ vim.opt.rtp:prepend(lazypath)
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
-  -- NOTE: First, some plugins that don't require any configuration
+  -- ABGR: Svefg, fbzr cyhtvaf gung qba'g erdhver nal pbasvthengvba
 
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
+  'sindrets/diffview.nvim',
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
@@ -108,7 +109,13 @@ require('lazy').setup({
     },
   },
   {
-    'sakhnik/nvim-gdb'
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      "rcarriga/nvim-dap-ui",
+      "theHamsta/nvim-dap-virtual-text",
+      "nvim-neotest/nvim-nio",
+      "williamboman/mason.nvim"
+    }
   },
   {
     'nvim-lua/plenary.nvim'
@@ -165,15 +172,9 @@ require('lazy').setup({
   },
 
   {
-    "nvim-tree/nvim-tree.lua",
-      version = "*",
-      lazy = false,
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
-      config = function()
-        require("nvim-tree").setup {}
-      end,
+    'stevearc/oil.nvim',
+    opts = {},
+    dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 
   {
@@ -190,9 +191,99 @@ require('lazy').setup({
 vim.opt.termguicolors = true
 
 -- empty setup using defaults
-require("nvim-tree").setup()
+require("oil").setup({
+  default_file_explorer = true,
+  colums = {
+    "icon",
+    "size",
+    "mtime"
+  },
+
+  win_options = {
+    wrap = false,
+    signcolumn = "no",
+    cursorcolumn = false,
+    foldcolumn = "0",
+    spell = false,
+    list = false,
+    conceallevel = 3,
+    concealcursor = "nvic",
+  },
+  delete_to_trash = true,
+  skip_confirm_for_simple_edits = false,
+  prompt_save_on_select_new_entry = true,
+  lsp_file_methods = {
+    autosave_changes = false,
+  },
+  constrain_cursor = "editable",
+  experimental_watch_for_changes = false,
+
+  keymaps = {
+    ["g?"] = "actions.show_help",
+    ["<CR>"] = "actions.select",
+    ["<C-s>"] = "actions.select_vsplit",
+    ["<C-h>"] = "actions.select_split",
+    ["<C-t>"] = "actions.select_tab",
+    ["<C-p>"] = "actions.preview",
+    ["<C-c>"] = "actions.close",
+    ["<leader>r"] = "actions.refresh",
+    ["-"] = "actions.parent",
+    ["_"] = "actions.open_cwd",
+    ["`"] = "actions.cd",
+    ["<leader>fe"] = "actions.toggle_float",
+    ["<leader>ot"] = "actions.toggle_trash",
+  },
+  use_default_keymaps = true,
+
+  view_options = {
+    show_hidden = true,
+    is_hidden_file = function(name, bufnr)
+      return vim.startswith(name, ".")
+    end,
+
+    is_always_hidden = function(name, bufnr)
+      return false
+    end,
+  },
+
+  float = {
+    paddint = 2,
+    max_width = 0,
+    max_height = 0,
+    border = "rounded",
+    win_options = {
+      winblend = 0,
+    },
+    overrride = function(conf)
+      return conf
+    end,
+  }
+})
 
 require("ibl").setup()
+
+local dap = require("dap")
+
+dap.adapters.gdb = {
+  type = "executable",
+  command = "gdb",
+  args = { "-i", "dap" }
+}
+
+dap.configurations.cpp = {
+  {
+    name = "Launch",
+    type = "gdb",
+    requrest = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = "${workspaceFolder}",
+    stopAtBeginningOfMainSubprogram = false,
+  },
+}
+dap.configurations.c = dap.configurations.cpp
+dap.configurations.rs = dap.configurations.cpp
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -509,8 +600,14 @@ cmp.setup {
 -- Erarnitox Options:
 ----------------------
 
+-- diff view
+vim.keymap.set("n", "<leader>hf", ":DiffviewFileHistory %<CR>")
+vim.keymap.set("n", "<leader>hr", ":DiffviewFileHistory")
+vim.keymap.set("n", "<leader>ho", ":DiffviewOpen<CR>")
+vim.keymap.set("n", "<leader>hc", ":DiffviewClose<CR>")
+
 -- open the file explorer:
-vim.keymap.set("n", "<leader>fe",":NvimTreeToggle<CR>")
+vim.keymap.set("n", "<leader>fe", require("oil").toggle_float)
 
 -- some other settings
 vim.opt.nu = true
