@@ -116,6 +116,8 @@ require('lazy').setup({
     dependencies = {
       "rcarriga/nvim-dap-ui",
       "theHamsta/nvim-dap-virtual-text",
+      -- per project dap config: https://youtu.be/lEMZnrC-ST4
+      "ldelossa/nvim-dap-projects",
       "nvim-neotest/nvim-nio",
       "williamboman/mason.nvim"
     }
