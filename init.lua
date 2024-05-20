@@ -36,6 +36,9 @@ require('lazy').setup({
   'tpope/vim-rhubarb',
   'sindrets/diffview.nvim',
 
+  -- CheatSheet for shortcuts
+  'sudormrfbin/cheatsheet.nvim',
+
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
@@ -611,6 +614,25 @@ vim.keymap.set("n", "<leader>hf", ":DiffviewFileHistory %<CR>")
 vim.keymap.set("n", "<leader>hr", ":DiffviewFileHistory")
 vim.keymap.set("n", "<leader>ho", ":DiffviewOpen<CR>")
 vim.keymap.set("n", "<leader>hc", ":DiffviewClose<CR>")
+
+-- debugger
+vim.api.nvim_set_hl(0, "red",    { fg = "#ff0000" })
+vim.api.nvim_set_hl(0, "blue",   { fg = "#3d59a1" })
+vim.api.nvim_set_hl(0, "green",  { fg = "#9ece6a" })
+vim.api.nvim_set_hl(0, "yellow", { fg = "#FFFF00" })
+vim.api.nvim_set_hl(0, "orange", { fg = "#f09000" })
+
+vim.fn.sign_define('DapBreakpoint',          { text='•', texthl='red',    linehl='red', numhl='red' })
+vim.fn.sign_define('DapBreakpointCondition', { text='•', texthl='blue',   linehl='blue', numhl='blue' })
+vim.fn.sign_define('DapBreakpointRejected',  { text='•', texthl='orange', linehl='orange', numhl='orange' })
+vim.fn.sign_define('DapStopped',             { text='•', texthl='green',  linehl='green', numhl='green' })
+vim.fn.sign_define('DapLogPoint',            { text='•', texthl='yellow', linehl='yellow', numhl='yellow' })
+
+vim.keymap.set('n', '<leader>c', require 'dap'.continue)
+vim.keymap.set('n', '<leader>so', require 'dap'.step_over)
+vim.keymap.set('n', '<leader>si', require 'dap'.step_into)
+vim.keymap.set('n', '<leader>sO', require 'dap'.step_out)
+vim.keymap.set('n', '<leader>bp', require 'dap'.toggle_breakpoint)
 
 -- open the file explorer:
 vim.keymap.set("n", "<leader>fe", require("oil").toggle_float)
