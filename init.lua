@@ -1,15 +1,9 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Install package manager
---    https://github.com/folke/lazy.nvim
---    `:help lazy.nvim.txt` for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -23,13 +17,8 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
---
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
+-- PLUGINS:
 require('lazy').setup({
-  -- ABGR: Svefg, fbzr cyhtvaf gung qba'g erdhver nal pbasvthengvba
 
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -38,6 +27,44 @@ require('lazy').setup({
 
   -- CheatSheet for shortcuts
   'sudormrfbin/cheatsheet.nvim',
+
+  -- debugger
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "mfussenegger/nvim-dap",
+    },
+    opts = {
+      handlers = {},
+    },
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    event = "VeryLazy",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "mfussenegger/nvim-dap",
+    },
+    config = function()
+      local dap = require("dap")
+      local dapui = require("dapui")
+      dapui.setup()
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+      end
+    end
+  },
+
+  -- theme
+  "catppuccin/nvim",
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
@@ -112,29 +139,11 @@ require('lazy').setup({
     },
   },
   {
-    "mfussenegger/nvim-dap",
-    dependencies = {
-      "rcarriga/nvim-dap-ui",
-      "theHamsta/nvim-dap-virtual-text",
-      -- per project dap config: https://youtu.be/lEMZnrC-ST4
-      "ldelossa/nvim-dap-projects",
-      "nvim-neotest/nvim-nio",
-      "williamboman/mason.nvim"
-    }
-  },
-  {
     'nvim-lua/plenary.nvim'
   },
   {
     -- tools for cmake
     'Civitasv/cmake-tools.nvim'
-  },
-  {
-    'martinsione/darkplus.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'darkplus'
-    end,
   },
   {
     -- Set lualine as statusline
@@ -189,6 +198,13 @@ require('lazy').setup({
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
     build = ':TSUpdate',
+  },
+
+  {
+    'goolord/alpha-nvim',
+    config = function ()
+        require'alpha'.setup(require'alpha.themes.dashboard'.config)
+    end
   },
 }, {})
 
@@ -266,33 +282,6 @@ require("oil").setup({
 })
 
 require("ibl").setup()
-
-local dap = require("dap")
-
-dap.adapters.gdb = {
-  type = "executable",
-  command = "gdb",
-  args = { "-i", "dap" }
-}
-
-dap.configurations.cpp = {
-  {
-    name = "Launch",
-    type = "gdb",
-    requrest = "launch",
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    cwd = "${workspaceFolder}",
-    stopAtBeginningOfMainSubprogram = false,
-  },
-}
-dap.configurations.c = dap.configurations.cpp
-dap.configurations.rs = dap.configurations.cpp
-
--- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
 vim.o.hlsearch = true
@@ -396,66 +385,6 @@ vim.keymap.set('n', '<leader>fd', function()
 	require('telescope.builtin').grep_string({ search = vim.fn.input("find: ") });
 end, { desc = '[F]in[d] Text in Files' })
 
--- [[ Configure Treesitter ]]
--- See `:help nvim-treesitter`
-require('nvim-treesitter.configs').setup {
-  -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'javascript', 'vimdoc', 'vim' },
-
-  -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-  auto_install = false,
-
-  highlight = { enable = true },
-  indent = { enable = true },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = '<c-space>',
-      node_incremental = '<c-space>',
-      scope_incremental = '<c-s>',
-      node_decremental = '<M-space>',
-    },
-  },
-  textobjects = {
-    select = {
-      enable = true,
-      lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-      keymaps = {
-        -- You can use the capture groups defined in textobjects.scm
-        ['aa'] = '@parameter.outer',
-        ['ia'] = '@parameter.inner',
-        ['af'] = '@function.outer',
-        ['if'] = '@function.inner',
-        ['ac'] = '@class.outer',
-        ['ic'] = '@class.inner',
-      },
-    },
-    move = {
-      enable = true,
-      set_jumps = true, -- whether to set jumps in the jumplist
-      goto_next_start = {
-        [']m'] = '@function.outer',
-        [']]'] = '@class.outer',
-      },
-      goto_next_end = {
-        [']M'] = '@function.outer',
-        [']['] = '@class.outer',
-      },
-      goto_previous_start = {
-        ['[m'] = '@function.outer',
-        ['[['] = '@class.outer',
-      },
-      goto_previous_end = {
-        ['[M'] = '@function.outer',
-        ['[]'] = '@class.outer',
-      },
-    },
-    swap = {
-      enable = false 
-    },
-  },
-}
-
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
@@ -556,54 +485,6 @@ mason_lspconfig.setup_handlers {
   end
 }
 
--- [[ Configure nvim-cmp ]]
--- See `:help cmp`
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
-require('luasnip.loaders.from_vscode').lazy_load()
-luasnip.config.setup {}
-
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert {
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete {},
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_locally_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.locally_jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-  },
-}
-
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
@@ -630,11 +511,12 @@ vim.fn.sign_define('DapBreakpointRejected',  { text='•', texthl='orange', line
 vim.fn.sign_define('DapStopped',             { text='•', texthl='green',  linehl='green', numhl='green' })
 vim.fn.sign_define('DapLogPoint',            { text='•', texthl='yellow', linehl='yellow', numhl='yellow' })
 
-vim.keymap.set('n', '<leader>c', require 'dap'.continue)
-vim.keymap.set('n', '<leader>so', require 'dap'.step_over)
-vim.keymap.set('n', '<leader>si', require 'dap'.step_into)
-vim.keymap.set('n', '<leader>sO', require 'dap'.step_out)
-vim.keymap.set('n', '<leader>bp', require 'dap'.toggle_breakpoint)
+-- debugger mappings:
+vim.keymap.set('n', '<leader>dc', require 'dap'.continue)
+vim.keymap.set('n', '<leader>do', require 'dap'.step_over)
+vim.keymap.set('n', '<leader>di', require 'dap'.step_into)
+vim.keymap.set('n', '<leader>dO', require 'dap'.step_out)
+vim.keymap.set('n', '<leader>dt', require 'dap'.toggle_breakpoint)
 
 -- open the file explorer:
 vim.keymap.set("n", "<leader>fe", require("oil").toggle_float)
@@ -688,4 +570,5 @@ vim.keymap.set("n", "<leader>zq", ":bdelete %<CR>")
 vim.keymap.set("n", "<leader>zz", ":w <CR> :bdelete %<CR>")
 vim.keymap.set("n", "<leader>hh", "#include <bits/stdc++.h>")
 
+vim.cmd.colorscheme 'catppuccin'
 
