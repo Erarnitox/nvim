@@ -15,6 +15,9 @@ call plug#begin('~/.vim/plugged')
 
 " Plugin List
 
+" Better colorsheme
+Plug 'ghifarit53/tokyonight-vim'
+
 " LSP Support via CoC (Conquer of Completion)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
@@ -106,7 +109,8 @@ nmap <leader>e :NERDTreeToggle<CR>
 nmap <leader>u :UndotreeToggle<CR>
 
 " Terminal Setup (Toggle terminal)
-nmap <leader>tt :NeotermToggle<CR>
+nmap <leader>tt :Ttoggle<CR>
+" nmap <leader>tc :Tclose<CR>
 
 " Indentation and Blankline Configuration
 let g:indent_blankline_enabled = v:true
@@ -135,6 +139,9 @@ let g:lightline = {
 
 " Keymapping for 'jj' to exit insert mode
 inoremap jj <Esc>
+
+" ignore previous config to display line break symbols etc.
+set nolist
 
 " LSP Statusline integration (for Lightline)
 function! CocStatus() abort
