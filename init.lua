@@ -145,7 +145,7 @@ require('lazy').setup({
   'nvim-treesitter/playground',  -- Treesitter playground for debugging
   'p00f/nvim-ts-rainbow', -- Rainbow parentheses
   'mbbill/undotree', -- Undo history
-  'folke/tokyonight.nvim', -- Theme
+  'rebelot/kanagawa.nvim', -- Theme
   'VonHeikemen/lsp-zero.nvim', -- Easy LSP config
   'nvim-lua/plenary.nvim', -- Required dependency for some plugins
   'nvim-treesitter/nvim-treesitter-context', -- Sticky code context
@@ -212,7 +212,15 @@ vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { des
 vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { desc = 'Live Grep' })
 vim.keymap.set('n', '<leader>fb', require('telescope.builtin').buffers, { desc = 'Find Buffers' })
 vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = 'Find Help' })
-vim.keymap.set('n', '<leader>e', ':Oil<CR>', { desc = 'Toggle File Explorer (Oil)' }) -- Use Oil as the file explorer
+
+vim.keymap.set('n', '<leader>e',  function()
+	if vim.bo.filetype == "oil" then
+		require('oil').close()
+	else
+		require('oil').open()
+	end
+end, { desc = 'Toggle File Explorer (Oil)' })
+
 vim.keymap.set('n', '<leader>u', ':UndotreeToggle<CR>', { desc = 'Toggle UndoTree' })
 
 -- LSP Keymaps
@@ -226,3 +234,31 @@ local on_attach = function(_, bufnr)
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
 end
 
+-- Default options:
+require('kanagawa').setup({
+    compile = false,             -- enable compiling the colorscheme
+    undercurl = true,            -- enable undercurls
+    commentStyle = { italic = true },
+    functionStyle = {},
+    keywordStyle = { italic = true},
+    statementStyle = { bold = true },
+    typeStyle = {},
+    transparent = false,         -- do not set background color
+    dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
+    terminalColors = true,       -- define vim.g.terminal_color_{0,17}
+    colors = {                   -- add/modify theme and palette colors
+        palette = {},
+        theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
+    },
+    overrides = function(colors) -- add/modify highlights
+        return {}
+    end,
+    theme = "wave",              -- Load "wave" theme when 'background' option is not set
+    background = {                 -- map the value of 'background' option to a theme
+        dark = "wave",           -- try "dragon" !
+        light = "lotus"
+    },
+})
+
+-- setup must be called before loading
+vim.cmd("colorscheme kanagawa")
