@@ -38,15 +38,61 @@ require('lazy').setup({
     end
   },
 
-  -- Autocompletion and Snippets
+  -- Autocomplete
   {
-    'hrsh7th/nvim-cmp',
+    'hrsh7th/nvim-cmp',        -- Autocompletion plugin
     dependencies = {
-      'L3MON4D3/LuaSnip',  -- Snippet engine
-      'saadparwaiz1/cmp_luasnip', -- Snippet completion source
-      'hrsh7th/cmp-nvim-lsp', -- LSP completion
+      'hrsh7th/cmp-nvim-lsp',  -- LSP source for nvim-cmp
+      'hrsh7th/cmp-buffer',    -- Buffer source
+      'hrsh7th/cmp-path',      -- Path source
+      'hrsh7th/cmp-cmdline',   -- Command-line source
+      'saadparwaiz1/cmp_luasnip', -- Snippet source
+      'L3MON4D3/LuaSnip',      -- Snippet engine
     },
-  },
+    config = function()
+      local cmp = require('cmp')
+      local luasnip = require('luasnip')
+
+      cmp.setup {
+        snippet = {
+          expand = function(args)
+            luasnip.lsp_expand(args.body)
+          end,
+        },
+        mapping = cmp.mapping.preset.insert({
+          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-f>'] = cmp.mapping.scroll_docs(4),
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<C-e>'] = cmp.mapping.abort(),
+          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        }),
+        sources = cmp.config.sources({
+          { name = 'nvim_lsp' },
+          { name = 'luasnip' },
+        }, {
+          { name = 'buffer' },
+          { name = 'path' },
+        }),
+      }
+
+      -- Use buffer and path suggestions for `/` and `:` commands
+      cmp.setup.cmdline('/', {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = 'buffer' }
+        }
+      })
+
+      cmp.setup.cmdline(':', {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+          { name = 'path' }
+        }, {
+          { name = 'cmdline' }
+        })
+      })
+    end
+  }, 
 
   -- Debugger for C++ (DAP)
   {
@@ -259,6 +305,27 @@ require('kanagawa').setup({
         light = "lotus"
     },
 })
+
+_G.compile_and_run_cpp = function()
+    local filepath = vim.fn.expand("%:p")
+    local filename = vim.fn.expand("%:t:r") -- Get the file name without extension
+    local output = "/tmp/" .. filename      -- Temporary output file path
+
+    local compile_cmd = "clang++ -std=c++20 -o " .. output .. " " .. filepath .. " && " .. output
+
+    require("toggleterm.terminal").Terminal:new({
+        cmd = compile_cmd,
+        direction = "float",
+        close_on_exit = false,
+    }):toggle()
+end
+
+vim.api.nvim_set_keymap("n", "<leader>r", ":lua compile_and_run_cpp()<CR>", { noremap = true, silent = true })
+
+-- set tab = 2 spaces
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
 
 -- setup must be called before loading
 vim.cmd("colorscheme kanagawa")
