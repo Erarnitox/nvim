@@ -33,7 +33,8 @@ require('lazy').setup({
       }
       require('lspconfig').clangd.setup {
         on_attach = on_attach,
-        capabilities = require('cmp_nvim_lsp').default_capabilities()
+        capabilities = require('cmp_nvim_lsp').default_capabilities(),
+        cmd = { "clangd", "--std=c++23" }
       }
     end
   },
