@@ -321,7 +321,7 @@ _G.compile_and_run_cpp = function()
     }):toggle()
 end
 
-vim.api.nvim_set_keymap("n", "<leader>r", ":lua compile_and_run_cpp()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<leader>r", ":w<CR>:lua compile_and_run_cpp()<CR>", { noremap = true, silent = true })
 
 -- set tab = 2 spaces
 vim.opt.tabstop = 2
