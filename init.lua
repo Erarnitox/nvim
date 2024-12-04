@@ -34,7 +34,7 @@ require('lazy').setup({
       require('lspconfig').clangd.setup {
         on_attach = on_attach,
         capabilities = require('cmp_nvim_lsp').default_capabilities(),
-        cmd = { "clangd", "--std=c++23" }
+        cmd = { "clangd", "--clang-tidy" }
       }
     end
   },
@@ -312,7 +312,7 @@ _G.compile_and_run_cpp = function()
     local filename = vim.fn.expand("%:t:r") -- Get the file name without extension
     local output = "/tmp/" .. filename      -- Temporary output file path
 
-    local compile_cmd = "clang++ -std=c++20 -o " .. output .. " " .. filepath .. " && " .. output
+    local compile_cmd = "clang++ -std=c++23 -o " .. output .. " " .. filepath .. " && " .. output
 
     require("toggleterm.terminal").Terminal:new({
         cmd = compile_cmd,
