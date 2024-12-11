@@ -254,6 +254,15 @@ require("toggleterm").setup {
   },
 }
 
+-- Add a Simple function Signature
+_G.insert_function_header = function()
+  local line_num = vim.fn.line('.') - 1
+  local comment = { "//----------------------------------------", "//", "//----------------------------------------" }
+  vim.api.nvim_buf_set_lines(0, line_num, line_num, false, comment)
+end
+
+vim.api.nvim_set_keymap('n', '<leader>ll', ':lua insert_function_header()<CR>', { noremap = true, silent = true })
+
 -- Set Keymaps (Including original keybindings)
 vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { desc = 'Find Files' })
 vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { desc = 'Live Grep' })
@@ -320,6 +329,65 @@ _G.compile_and_run_cpp = function()
         close_on_exit = false,
     }):toggle()
 end
+
+local dap = require("dap")
+local dapui = require("dapui")
+
+dap.adapters.lldb = {
+  type = 'executable',
+  command = '/usr/bin/lldb-dap',
+  name = 'lldb'
+}
+
+dap.configurations.cpp = {
+  {
+    name = "Launch",
+    type = "lldb",
+    request = "launch",
+    program = function()
+      local filepath = vim.fn.expand("%:p")
+      local filename = vim.fn.expand("%:t:r") 
+      local output = "/tmp/" .. filename
+      local compile_cmd = string.format("clang++ -std=c++23 -g -o %s %s", output, filepath)
+
+      local result = os.execute(compile_cmd)
+      if result ~= 0 then
+        print("Compilation failed!")
+        return nil
+      end
+
+      print("Compiled successfully:", output)
+      return output
+    end,
+    cwd = '${workspaceFolder}',
+    stopAtEntry = true,
+    args = {},
+    runInTerminal = false,
+    setupCommands = {
+      {
+        description = "Enable pretty printing",
+        text = "-enable-pretty-printing",
+        ignoreFailures = false
+      }
+    },
+  }
+}
+
+dapui.setup() -- Ensure UI setup is correct
+dap.listeners.after.event_initialized['dapui_config'] = function() dapui.open() end
+dap.listeners.before.event_terminated['dapui_config'] = function() dapui.close() end
+dap.listeners.before.event_exited['dapui_config'] = function() dapui.close() end
+
+local opts = { noremap = true, silent = true }
+
+vim.api.nvim_set_keymap('n', '<leader>dd', '<Cmd>lua require("dap").continue()<CR>', { noremap = true, silent = true, desc = 'Start/Continue Debugging' })
+vim.api.nvim_set_keymap('n', '<leader>do', '<Cmd>lua require("dap").step_over()<CR>', { noremap = true, silent = true, desc = 'Step Over' })
+vim.api.nvim_set_keymap('n', '<leader>di', '<Cmd>lua require("dap").step_into()<CR>', { noremap = true, silent = true, desc = 'Step Into' })
+vim.api.nvim_set_keymap('n', '<leader>du', '<Cmd>lua require("dap").step_out()<CR>', { noremap = true, silent = true, desc = 'Step Out' })
+vim.api.nvim_set_keymap('n', '<leader>db', '<Cmd>lua require("dap").toggle_breakpoint()<CR>', { noremap = true, silent = true, desc = 'Toggle Breakpoint' })
+vim.api.nvim_set_keymap('n', '<leader>dr', '<Cmd>lua require("dap").restart()<CR>', { noremap = true, silent = true, desc = 'Restart Debugging' })
+vim.api.nvim_set_keymap('n', '<leader>dq', '<Cmd>lua require("dap").terminate()<CR>', { noremap = true, silent = true, desc = 'Stop Debugging' })
+vim.api.nvim_set_keymap('n', '<Leader>dl', ':lua require"dap".run_last()<CR>', opts) 
 
 vim.api.nvim_set_keymap("n", "<leader>r", ":w<CR>:lua compile_and_run_cpp()<CR>", { noremap = true, silent = true })
 
