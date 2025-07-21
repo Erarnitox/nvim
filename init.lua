@@ -246,6 +246,7 @@ vim.o.completeopt = 'menuone,noselect' -- Completion behavior
 -- Keymap for 'jj' to exit insert mode
 vim.keymap.set('i', 'jj', '<Esc>', { desc = 'Exit Insert Mode' })
 
+
 -- ToggleTerm Configuration
 require("toggleterm").setup {
   open_mapping = '<leader>tt', -- Toggle terminal with Ctrl-\
@@ -279,6 +280,10 @@ vim.keymap.set('n', '<leader>e',  function()
 end, { desc = 'Toggle File Explorer (Oil)' })
 
 vim.keymap.set('n', '<leader>u', ':UndotreeToggle<CR>', { desc = 'Toggle UndoTree' })
+
+vim.keymap.set('n', 'go', ':e#<CR>', { desc = 'Goto previous file' })
+vim.keymap.set('n', 'gn', ':bnext<CR>', { desc = "Next Buffer" });
+vim.keymap.set('n', 'gp', ':bprevious<CR>', { desc = "Previous Buffer" });
 
 -- LSP Keymaps
 local on_attach = function(_, bufnr)
@@ -316,6 +321,16 @@ require('kanagawa').setup({
         light = "lotus"
     },
 })
+
+_G.compile_cmake_global = function()
+    local compile_cmd = "cmake --build `git rev-parse --show-toplevel 2>/dev/null`/build"
+
+    require("toggleterm.terminal").Terminal:new({
+        cmd = compile_cmd,
+        direction = "float",
+        close_on_exit = false,
+    }):toggle()
+end
 
 _G.compile_and_run_cpp = function()
     local filepath = vim.fn.expand("%:p")
@@ -374,14 +389,12 @@ dap.configurations.cpp = {
   }
 }
 
-dapui.setup() -- Ensure UI setup is correct
 dap.listeners.after.event_initialized['dapui_config'] = function() dapui.open() end
 dap.listeners.before.event_terminated['dapui_config'] = function() dapui.close() end
 dap.listeners.before.event_exited['dapui_config'] = function() dapui.close() end
 
 local opts = { noremap = true, silent = true }
 
-vim.api.nvim_set_keymap('n', '<leader>dd', '<Cmd>lua require("dap").continue()<CR>', { noremap = true, silent = true, desc = 'Start/Continue Debugging' })
 vim.api.nvim_set_keymap('n', '<leader>do', '<Cmd>lua require("dap").step_over()<CR>', { noremap = true, silent = true, desc = 'Step Over' })
 vim.api.nvim_set_keymap('n', '<leader>di', '<Cmd>lua require("dap").step_into()<CR>', { noremap = true, silent = true, desc = 'Step Into' })
 vim.api.nvim_set_keymap('n', '<leader>du', '<Cmd>lua require("dap").step_out()<CR>', { noremap = true, silent = true, desc = 'Step Out' })
@@ -391,6 +404,8 @@ vim.api.nvim_set_keymap('n', '<leader>dq', '<Cmd>lua require("dap").terminate()<
 vim.api.nvim_set_keymap('n', '<Leader>dl', ':lua require"dap".run_last()<CR>', opts) 
 
 vim.api.nvim_set_keymap("n", "<leader>r", ":w<CR>:lua compile_and_run_cpp()<CR>", { noremap = true, silent = true })
+
+vim.api.nvim_set_keymap("n", "mkg", ":w<CR>:lua compile_cmake_global()<CR>", { noremap = true, silent = true })
 
 -- set tab = 2 spaces
 vim.opt.tabstop = 2
