@@ -198,7 +198,6 @@ require('lazy').setup({
   'nvim-treesitter/nvim-treesitter-context', -- Sticky code context
   'simrat39/rust-tools.nvim', -- Rust support
   'sbdchd/neoformat', -- Formatting
-  
   -- Additional helper plugins
   'tpope/vim-surround', -- Surround text objects
   -- 'windwp/nvim-autopairs', -- Auto close pairs
@@ -246,7 +245,6 @@ vim.o.completeopt = 'menuone,noselect' -- Completion behavior
 -- Keymap for 'jj' to exit insert mode
 vim.keymap.set('i', 'jj', '<Esc>', { desc = 'Exit Insert Mode' })
 
-
 -- ToggleTerm Configuration
 require("toggleterm").setup {
   open_mapping = '<leader>tt', -- Toggle terminal with Ctrl-\
@@ -270,6 +268,8 @@ vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { des
 vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { desc = 'Live Grep' })
 vim.keymap.set('n', '<leader>fb', require('telescope.builtin').buffers, { desc = 'Find Buffers' })
 vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = 'Find Help' })
+vim.keymap.set('n', '<leader>h', require('telescope.builtin').diagnostics, { desc = 'Show Diagnostics' })
+vim.keymap.set('n', '<leader>i', ':lua vim.diagnostic.open_float()<CR>', { desc = 'Get Line Diagnostics' })
 
 vim.keymap.set('n', '<leader>e',  function()
 	if vim.bo.filetype == "oil" then
@@ -394,6 +394,7 @@ dap.listeners.before.event_terminated['dapui_config'] = function() dapui.close()
 dap.listeners.before.event_exited['dapui_config'] = function() dapui.close() end
 
 local opts = { noremap = true, silent = true }
+
 
 vim.api.nvim_set_keymap('n', '<leader>do', '<Cmd>lua require("dap").step_over()<CR>', { noremap = true, silent = true, desc = 'Step Over' })
 vim.api.nvim_set_keymap('n', '<leader>di', '<Cmd>lua require("dap").step_into()<CR>', { noremap = true, silent = true, desc = 'Step Into' })
