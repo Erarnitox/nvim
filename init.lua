@@ -95,6 +95,17 @@ require('lazy').setup({
     end
   }, 
 
+  -- TODO comments 
+  {
+    "folke/todo-comments.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      opts = {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+  },
+
   -- Debugger for C++ (DAP)
   {
     "mfussenegger/nvim-dap",
@@ -268,6 +279,7 @@ vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { des
 vim.keymap.set('n', '<leader>fg', require('telescope.builtin').live_grep, { desc = 'Live Grep' })
 vim.keymap.set('n', '<leader>fb', require('telescope.builtin').buffers, { desc = 'Find Buffers' })
 vim.keymap.set('n', '<leader>fh', require('telescope.builtin').help_tags, { desc = 'Find Help' })
+vim.keymap.set('n', '<leader>ft', ':TodoTelescope<CR>', { desc = 'Find TODO List Items' })
 vim.keymap.set('n', '<leader>h', require('telescope.builtin').diagnostics, { desc = 'Show Diagnostics' })
 vim.keymap.set('n', '<leader>i', ':lua vim.diagnostic.open_float()<CR>', { desc = 'Get Line Diagnostics' })
 
@@ -402,7 +414,7 @@ vim.api.nvim_set_keymap('n', '<leader>du', '<Cmd>lua require("dap").step_out()<C
 vim.api.nvim_set_keymap('n', '<leader>db', '<Cmd>lua require("dap").toggle_breakpoint()<CR>', { noremap = true, silent = true, desc = 'Toggle Breakpoint' })
 vim.api.nvim_set_keymap('n', '<leader>dr', '<Cmd>lua require("dap").restart()<CR>', { noremap = true, silent = true, desc = 'Restart Debugging' })
 vim.api.nvim_set_keymap('n', '<leader>dq', '<Cmd>lua require("dap").terminate()<CR>', { noremap = true, silent = true, desc = 'Stop Debugging' })
-vim.api.nvim_set_keymap('n', '<Leader>dl', ':lua require"dap".run_last()<CR>', opts) 
+vim.api.nvim_set_keymap('n', '<Leader>dl', ':lua require("dap").run_last()<CR>', opts) 
 
 vim.api.nvim_set_keymap("n", "<leader>r", ":w<CR>:lua compile_and_run_cpp()<CR>", { noremap = true, silent = true })
 
