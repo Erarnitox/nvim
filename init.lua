@@ -37,6 +37,63 @@ local function git_toplevel()
   return vim.fn.getcwd()
 end
 
+--- Create a GitHub repository via `gh repo create` (non-interactive flags).
+local function github_repo_create()
+  if vim.fn.executable 'gh' ~= 1 then
+    vim.notify('GitHub CLI (gh) is not on PATH', vim.log.levels.ERROR)
+    return
+  end
+
+  local default_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':t')
+  vim.ui.input({ prompt = 'Repository name: ', default = default_name }, function(name)
+    if not name or name:match '^%s*$' then
+      return
+    end
+    name = vim.trim(name)
+
+    vim.ui.select({ 'private', 'public' }, { prompt = 'Visibility' }, function(visibility)
+      if not visibility then
+        return
+      end
+
+      vim.ui.select({
+        'Push this directory',
+        'Empty remote only',
+      }, { prompt = 'Source' }, function(source)
+        if not source then
+          return
+        end
+
+        local cmd = { 'gh', 'repo', 'create', name }
+        if visibility == 'private' then
+          table.insert(cmd, '--private')
+        else
+          table.insert(cmd, '--public')
+        end
+
+        local opts = { text = true }
+        if source == 'Push this directory' then
+          opts.cwd = git_toplevel()
+          vim.list_extend(cmd, { '--source', '.', '--remote', 'origin', '--push' })
+        end
+
+        vim.notify('Creating GitHub repository ' .. name .. '…')
+        vim.system(cmd, opts, function(result)
+          vim.schedule(function()
+            if result.code == 0 then
+              local url = vim.trim(result.stdout or '')
+              vim.notify(url ~= '' and url or ('Created ' .. name), vim.log.levels.INFO)
+            else
+              local err = vim.trim((result.stderr ~= '' and result.stderr) or result.stdout or '')
+              vim.notify(err ~= '' and err or 'gh repo create failed', vim.log.levels.ERROR)
+            end
+          end)
+        end)
+      end)
+    end)
+  end)
+end
+
 --- Single-file compile + run (scratch / interview / small utils).
 local function compile_and_run_cpp()
   local filepath = vim.fn.expand '%:p'
@@ -473,6 +530,7 @@ require('lazy').setup({
       on_attach = function(bufnr)
         local gs = require 'gitsigns'
         vim.keymap.set('n', '<leader>hp', gs.preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+        vim.keymap.set('n', '<leader>tb', gs.toggle_current_line_blame, { buffer = bufnr, desc = 'Toggle git blame (line)' })
         vim.keymap.set({ 'n', 'v' }, ']c', function()
           if vim.wo.diff then
             return ']c'
@@ -492,6 +550,25 @@ require('lazy').setup({
           return '<Ignore>'
         end, { expr = true, buffer = bufnr, desc = 'Previous git hunk' })
       end,
+    },
+  },
+  {
+    'pwntester/octo.nvim',
+    cmd = 'Octo',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+      'nvim-tree/nvim-web-devicons',
+    },
+    opts = {
+      picker = 'telescope',
+      enable_builtin = true,
+      mappings = {
+        pull_request = {
+          -- Avoid <leader>qa: <leader>q is already diagnostics loclist.
+          approve_pr = { lhs = '<localleader>pa', desc = 'approve PR' },
+        },
+      },
     },
   },
 
@@ -637,6 +714,7 @@ require('lazy').setup({
         { '<leader>d', group = 'Debug' },
         { '<leader>f', group = 'Find' },
         { '<leader>g', group = 'Git' },
+        { '<leader>o', group = 'GitHub' },
         { '<leader>h', group = 'Diagnostics / Hunk' },
         { '<leader>l', group = 'LSP helpers' },
         { '<leader>t', group = 'Lists / Terminal' },
@@ -859,3 +937,13 @@ end, { desc = 'Debug: Toggle UI' })
 vim.keymap.set('n', '<leader>gs', '<cmd>Git<CR>', { desc = 'Git status (fugitive)' })
 vim.keymap.set('n', '<leader>gb', '<cmd>GBrowse<CR>', { desc = 'Open on GitHub' })
 vim.keymap.set('v', '<leader>gb', ":'<,'>GBrowse<CR>", { desc = 'Open selection on GitHub' })
+vim.keymap.set('n', '<leader>oo', '<cmd>Octo<CR>', { desc = 'Octo command picker' })
+vim.keymap.set('n', '<leader>op', '<cmd>Octo pr list<CR>', { desc = 'List pull requests' })
+vim.keymap.set('n', '<leader>oP', '<cmd>Octo pr create<CR>', { desc = 'Create pull request' })
+vim.keymap.set('n', '<leader>ov', '<cmd>Octo review<CR>', { desc = 'Start PR review' })
+vim.keymap.set('n', '<leader>oi', '<cmd>Octo issue list<CR>', { desc = 'List issues' })
+vim.keymap.set('n', '<leader>oI', '<cmd>Octo issue create<CR>', { desc = 'Create issue' })
+vim.keymap.set('n', '<leader>or', '<cmd>Octo repo list<CR>', { desc = 'List GitHub repos' })
+vim.keymap.set('n', '<leader>oR', github_repo_create, { desc = 'Create GitHub repo' })
+vim.keymap.set('n', '<leader>os', '<cmd>Octo search<CR>', { desc = 'Search GitHub' })
+vim.keymap.set('n', '<leader>on', '<cmd>Octo notification list<CR>', { desc = 'GitHub notifications' })

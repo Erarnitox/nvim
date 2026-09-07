@@ -28,7 +28,7 @@ On first launch, [lazy.nvim](https://github.com/folke/lazy.nvim) installs plugin
 | `make` | Build telescope-fzf-native |
 | `git` | VCS + fugitive |
 | `ripgrep` (optional) | Faster Telescope live grep |
-| `gh` (optional) | GitHub CLI |
+| `gh` (recommended) | GitHub CLI for octo.nvim and repo create (`gh auth login`) |
 
 ## Features
 
@@ -39,7 +39,7 @@ On first launch, [lazy.nvim](https://github.com/folke/lazy.nvim) installs plugin
 - **nvim-dap + dap-ui** — breakpoints, stepping, UI; single-file launch or `CMakeDebug` for targets
 - **Telescope** — files, grep, git files, diagnostics, TODOs (fzf-native when `make` is available)
 - **Oil** — buffer-based file explorer
-- **Git / GitHub** — fugitive, gitsigns, `:GBrowse` via rhubarb
+- **Git / GitHub** — fugitive, gitsigns, `:GBrowse` via rhubarb, PRs/issues via octo.nvim (`gh`)
 - **Treesitter** — C/C++/CMake highlighting, textobjects, sticky context, C/C++ scope folds (`za`/`zc`/`zo`)
 - **Kanagawa** theme, lualine, which-key, indent guides, Comment.nvim, undotree
 
@@ -51,6 +51,7 @@ On first launch, [lazy.nvim](https://github.com/folke/lazy.nvim) installs plugin
 4. Edit with clangd (completions, `gd`, `gs` for header/source).
 5. **`<leader>cs`** — pick the executable target if needed; **`<leader>cr`** to run or **`<leader>cd`** to debug.
 6. **`<leader>gb`** — open the current file/line on GitHub (`:GBrowse`).
+7. **`<leader>op`** — list pull requests; **`<leader>ov`** starts a review. **`<leader>oi`** / **`<leader>oI`** list or create issues. **`<leader>oR`** creates a GitHub repo via `gh`.
 
 If `build/` already exists (e.g. from CI or a previous generate), **`mkg`** / **`<leader>mk`** runs `cmake --build <git-root>/build` without going through cmake-tools target selection.
 
@@ -62,7 +63,7 @@ For a one-off `.cpp` file (no CMake), use **`<leader>r`** (clang++ `-std=c++23`)
 
 **UI / editing:** `kanagawa.nvim`, `lualine.nvim`, `indent-blankline.nvim`, `which-key.nvim`, `todo-comments.nvim`, `Comment.nvim`, `vim-surround`, `undotree`, `nvim-treesitter-context`, `nvim-web-devicons`
 
-**Git:** `vim-fugitive`, `vim-rhubarb`, `gitsigns.nvim`
+**Git:** `vim-fugitive`, `vim-rhubarb`, `gitsigns.nvim`, `octo.nvim`
 
 ## Keybindings
 
@@ -143,14 +144,34 @@ Leader is **Space**.
 | `<leader>dl` | Run last |
 | `<leader>du` | Toggle DAP UI |
 
-### Git / GitHub
+### Git (`<leader>g`)
 
 | Keybind | Function |
 |---------|----------|
 | `<leader>gs` | Fugitive status |
 | `<leader>gb` | Open on GitHub (`:GBrowse`) |
+| `<leader>tb` | Toggle current-line git blame |
 | `<leader>hp` | Preview hunk |
 | `]c` / `[c` | Next / previous hunk |
+
+### GitHub (`<leader>o`)
+
+Requires `gh` (`gh auth login`). Run `:checkhealth octo` to verify. For GitHub Projects, add scopes with `gh auth refresh -s read:project` (or `-s project` to write).
+
+| Keybind | Function |
+|---------|----------|
+| `<leader>oo` | Octo command picker (`:Octo`) |
+| `<leader>op` | List pull requests |
+| `<leader>oP` | Create pull request for current branch |
+| `<leader>ov` | Start PR review |
+| `<leader>oi` | List issues |
+| `<leader>oI` | Create issue |
+| `<leader>or` | List GitHub repos |
+| `<leader>oR` | Create a GitHub repo (`gh repo create`) |
+| `<leader>os` | Search GitHub |
+| `<leader>on` | Notifications |
+
+Typical review flow: **`<leader>op`** → open a PR → **`<leader>ov`** (or `<localleader>vs` in the PR buffer) → comments with **`<localleader>ca`** → submit the review. Approve with **`<localleader>pa`**. `:w` on an issue/PR buffer syncs edits to GitHub.
 
 ## Layout
 
