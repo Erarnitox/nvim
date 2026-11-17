@@ -1,5 +1,7 @@
 # NVIM — C++23 Configuration
 
+[CheatSheet](res/CheatSheet.png)
+
 Neovim setup oriented around modern C++ development with **clang**, **CMake**, **Ninja**, **CPM.cmake**, **git**, and **GitHub**.
 
 You can use this config as-is or as a starting point. Back up your existing config first — the install command below replaces `~/.config/nvim`.
