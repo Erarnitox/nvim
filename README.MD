@@ -1,6 +1,6 @@
 # NVIM — C++23 Configuration
 
-[CheatSheet](res/CheatSheet.png)
+![CheatSheet](res/CheatSheet.png)
 
 Neovim setup oriented around modern C++ development with **clang**, **CMake**, **Ninja**, **CPM.cmake**, **git**, and **GitHub**.
 
